@@ -96,11 +96,11 @@ def collect_all_data(title):
     cats, _url = init_connect()
     file, writer = init_csv(title)
     for cat,_ in zip(cats,_url):
-        new_result = requests.get(_)
-        if new_result.status_code == 200:
-            new_doc = BeautifulSoup(new_result.content, "html.parser")
+        result = requests.get(_)
+        if result.status_code == 200:
+            doc = BeautifulSoup(result.content, "html.parser")
 
-        course = new_doc.find_all("a", class_="CardText-link")
+        course = doc.find_all("a", class_="CardText-link")
         for c in course:
             o1 = cat.string
             print(o1)
@@ -113,16 +113,31 @@ def collect_all_data(title):
             writer.writerow([o1,o2,o3,r2,r3,r4,r5])
     file.close()
 
-def collect_cat_data(title):
+def collect_cat_data(num):
+    title = str(args.cat)+".csv"
     cats, _url = init_connect()
     file, writer = init_csv(title)
-    for cat in cats:
-        print(cat)
+
+    #print(cats[num-1].string)
+    result = requests.get(_url[num-1])
+    if result.status_code == 200:
+            doc = BeautifulSoup(result.content, "html.parser")
+
+    course = doc.find_all("a", class_="CardText-link")
+    for c in course:
+        o1 = cats[num-1].string
+        print(o1)
+        o2 = c.string
+        print(o2)
+        o3 = "https://www.coursera.org"+c["href"]
+        print(o3)
+        r1,r2,r3,r4,r5 = course_page("https://www.coursera.org"+c["href"])
+        #file.write("{};{};{};{};{};{};{};{}".format(o1,o2,o3,r1,r2,r3,r4,r5))
+        writer.writerow([o1,o2,o3,r2,r3,r4,r5])
+
     file.close()
 
 if __name__ == "__main__":
-    arguments = sys.argv
-
     parser = argparse.ArgumentParser(description="Coursera.org Parser")
     parser.add_argument('--list', dest='list', type=str)
     parser.add_argument('--data', dest='data', type=str)
@@ -134,5 +149,4 @@ if __name__ == "__main__":
     if args.data == "all":
         collect_all_data("courses.csv")
     if args.cat:
-        print(args.cat)
-        collect_cat_data(str(args.cat)+".csv")
+        collect_cat_data(args.cat)
