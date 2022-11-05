@@ -22,7 +22,11 @@
         
             <button type="submit" class="btn btn-primary">Query</button>
             <h3>{{data}}</h3>
+            {% if link %}
             <a href="/{{link}}">The file: {{link}}</a>
+            {% else %}
+            <h3>Waiting...</h3>
+            {% endif %}
         </form>
     </div>
 

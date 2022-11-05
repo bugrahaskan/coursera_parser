@@ -20,6 +20,7 @@ def index():
         #col = threading.Thread(target=collect_cat_data, args=(data,))
         #col.start()
         link = collect_cat_data(data)
+        link = url_for('static', filename=link)
         return render_template('index.html', cat_list=cat_list, data=data, link=link)
     else:
         return render_template('index.html', cat_list=cat_list)
