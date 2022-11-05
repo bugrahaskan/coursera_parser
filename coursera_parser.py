@@ -78,7 +78,7 @@ def init_connect():
 
     cats = doc.find_all(["span"], class_="domain-card-name")
     for i, cat in enumerate(cats):
-        print("{}. {}".format(i+1, cat.string))
+        #print("{}. {}".format(i+1, cat.string))
         _url.append(url+"/"+"-".join(cat.string.lower().split()))
     
     return cats, _url
@@ -114,18 +114,18 @@ def collect_all_data(title):
     file.close()
 
 def collect_cat_data(num):
-    title = str(args.cat)+".csv"
+    title = str(num)+".csv"
     cats, _url = init_connect()
     file, writer = init_csv(title)
 
     #print(cats[num-1].string)
-    result = requests.get(_url[num-1])
+    result = requests.get(_url[int(num)])
     if result.status_code == 200:
             doc = BeautifulSoup(result.content, "html.parser")
 
     course = doc.find_all("a", class_="CardText-link")
     for c in course:
-        o1 = cats[num-1].string
+        o1 = cats[int(num)].string
         print(o1)
         o2 = c.string
         print(o2)
@@ -136,6 +136,7 @@ def collect_cat_data(num):
         writer.writerow([o1,o2,o3,r2,r3,r4,r5])
 
     file.close()
+    return title
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Coursera.org Parser")
@@ -145,7 +146,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.list == "category":
-        init_connect()
+        cats, _url = init_connect()
+        for i, cat in enumerate(cats):
+            print("{}. {}".format(i+1, cat.string))
     if args.data == "all":
         collect_all_data("courses.csv")
     if args.cat:
